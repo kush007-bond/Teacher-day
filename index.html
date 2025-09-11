@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Teacher's Day</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+    background: url('assets/black.jpg') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+    overflow: hidden;
+    }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            position: relative;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .screen {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 100%;
+            width: 100%;
+            position: absolute;
+            transition: transform 0.5s ease;
+        }
+
+        #greeting-screen {
+            background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+            z-index: 2;
+        }
+
+        #teachers-screen {
+            transform: translateX(100%);
+            z-index: 1;
+            background: white;
+        }
+
+        #video-screen {
+            transform: translateX(100%);
+            z-index: 3;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #greeting-screen h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #3a1c71;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #greeting-screen p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .tap-hint {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Scrollable container for teachers list */
+        .teachers-list-container {
+            width: 100%;
+            max-height: 60vh;
+            overflow-y: auto;
+            margin-top: 20px;
+            padding-right: 5px;
+        }
+
+        /* Custom scrollbar styling */
+        .teachers-list-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .teachers-list-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .teachers-list-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .teachers-list-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .teachers-list {
+            width: 100%;
+            list-style: none;
+        }
+
+        .teacher-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .teacher-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .teacher-name {
+            font-weight: 600;
+            color: #3a1c71;
+        }
+
+        .teacher-subject {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .teacher-nickname {
+            font-size: 0.8rem;
+            font-style: italic;
+            color: #3a1c71;
+            margin-top: 4px;
+        }
+
+        .greeting-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .greeting-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 90%;
+            width: 400px;
+            text-align: center;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .greeting-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .greeting-modal.active .greeting-content {
+            transform: translateY(0);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+        
+        .back-to-list-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #3a1c71;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+        
+        .back-to-list-btn:hover {
+            background: #4d2794;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f0f;
+            opacity: 0.8;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .app-title {
+            color: #3a1c71;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+
+        .back-btn {
+            align-self: flex-start;
+            margin-bottom: 20px;
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 1rem;
+        }
+
+        .back-btn:hover {
+            color: #3a1c71;
+        }
+        
+        .credit {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+            font-style: italic;
+            z-index: 1000;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        #teacher-video {
+            width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .video-loading {
+            color: white;
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .skip-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Greeting Screen -->
+        <div class="screen" id="greeting-screen">
+            <h1>Happy Teacher's Day!</h1>
+            <p>Dear teachers, your dedication and passion for education light the path to knowledge and inspire generations to come.</p>
+            <p>Thank you for shaping minds and touching hearts.</p>
+            <div class="tap-hint">Tap anywhere to continue</div>
+        </div>
+
+        <!-- Teachers List Screen -->
+        <div class="screen" id="teachers-screen">
+            <h2 class="app-title">Select a Teacher</h2>
+            <button class="back-btn">&larr; Back to Greeting</button>
+            
+            <!-- Scrollable container for teachers list -->
+            <div class="teachers-list-container">
+                <ul class="teachers-list">
+                    <!-- Teacher list will be populated by JavaScript -->
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Video Screen -->
+        <div class="screen" id="video-screen">
+            <div class="video-loading">Loading video greeting...</div>
+            <video id="teacher-video" playsinline>
+                Your browser does not support the video tag.
+            </video>
+            <button class="skip-btn" id="skip-btn">Skip</button>
+        </div>
+    </div>
+
+    <!-- Greeting Modal -->
+    <div class="greeting-modal" id="greeting-modal">
+        <div class="greeting-content">
+            <span class="close-btn" id="close-btn">&times;</span>
+            <h2 id="teacher-greeting-name"></h2>
+            <p id="teacher-greeting-message"></p>
+            <button class="back-to-list-btn" id="back-to-list-btn">Back to Teachers List</button>
+        </div>
+    </div>
+    
+    <div class="credit">Created by Kushal Narayana</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Teacher data with personalized messages and nicknames
+            const teachers = [
+                { 
+                    name: "Mallari Bhat Sir", 
+                    subject: "Basic Maths",
+                    nickname: "Our Equation Expert",
+                    message: "Your methodical approach to mathematics has made complex problems seem simple. Thank you for building our foundation in numbers and logic.",
+                    video: "assets/mallari sir.mp4"
+                },
+                { 
+                    name: "Shruti Ma'am", 
+                    subject: "Statistics",
+                    nickname: "Our Stats Strategist",
+                    message: "You've transformed statistics from daunting numbers to fascinating stories. Thank you for making data come alive in our classrooms.",
+                    video: "assets/shruthi mam.mp4"
+                },
+                { 
+                    name: "Halesh Sir", 
+                    subject: "Economics",
+                    nickname: "Our Economic Explorer",
+                    message: "Your insights into economic principles have given us a new perspective on the world. Thank you for connecting textbook theories to real-life scenarios.",
+                    video: "assets/halesh sir.mp4"
+                },
+                { 
+                    name: "Devraj Sir", 
+                    subject: "BST and Accounts",
+                    nickname: "Our Business Maestro",
+                    message: "Your expertise in business studies and accounts has prepared us for the commercial world. Thank you for teaching us the language of business.",
+                    video: "assets/devraj sir.mp4"
+                },
+                { 
+                    name: "Gireesh Sir", 
+                    subject: "BST and Accounts",
+                    nickname: "Our Accounting Ace",
+                    message: "Your clear explanations of accounting principles have made balance sheets understandable. Thank you for demystifying the world of finance for us.",
+                    video: "assets/ashoka.mp4"
+                },
+                { 
+                    name: "Mahesh Sir", 
+                    subject: "English",
+                    nickname: "Our Language Luminary",
+                    message: "Your passion for literature and language has inspired us to appreciate the power of words. Thank you for helping us find our voice in English.",
+                    video: "assets/sir mahesh.mp4"
+                },
+                { 
+                    name: "Apoorva Ma'am", 
+                    subject: "Basic Maths",
+                    nickname: "Our Math Magician",
+                    message: "Your patience with mathematical concepts has helped countless students overcome their fear of numbers. Thank you for making math accessible to everyone.",
+                    video: "assets/apoorva.mp4"
+                },
+                { 
+                    name: "Sridhar Sir", 
+                    subject: "Kannada",
+                    nickname: "Our Kannada Kavi",
+                    message: "Your dedication to preserving and teaching our regional language has been truly inspiring. Thank you for keeping our cultural heritage alive.",
+                    video: "assets/sir.mp4"
+                },
+                { 
+                    name: "Manasa Ma'am", 
+                    subject: "Computer",
+                    nickname: "Our Code Commander",
+                    message: "Your expertise in computer science has opened the digital world to us. Thank you for preparing us for the technology-driven future.",
+                    video: "assets/manasa.mp4"
+                },
+                { 
+                    name: "Veena Ma'am", 
+                    subject: "BST and Accounts",
+                    nickname: "Our Business Brain",
+                    message: "Your practical approach to business studies has shown us the real-world applications of theoretical concepts. Thank you for your insightful teachings.",
+                    video: "assets/veena.mp4"
+                },
+                { 
+                    name: "Vidhya Ma'am", 
+                    subject: "Computer",
+                    nickname: "Our Digital Dynamo",
+                    message: "Your enthusiasm for technology is contagious. Thank you for guiding us through the complexities of computer science with patience and clarity.",
+                    video: "assets/vidhya.mp4"
+                },
+                { 
+                    name: "Lavanya Ma'am", 
+                    subject: "English",
+                    nickname: "Our Literary Light",
+                    message: "Your love for literature has made every class an adventure through words and ideas. Thank you for expanding our horizons through English.",
+                    video: "assets/lavanya mam.mp4"
+                },
+                { 
+                    name: "Sowmya Ma'am", 
+                    subject: "BST and Accounts",
+                    nickname: "Our Commerce Captain",
+                    message: "Your comprehensive knowledge of business studies has been invaluable to our learning. Thank you for making complex topics understandable.",
+                    video: "assets/sowmya.mp4"
+                },
+                { 
+                    name: "Chaitra Ma'am", 
+                    subject: "Hindi",
+                    nickname: "Our Hindi Harbinger",
+                    message: "Your vibrant teaching of Hindi has made learning our national language enjoyable. Thank you for bringing Hindi literature and grammar to life.",
+                    video: "assets/chaitra.mp4"
+                },
+                { 
+                    name: "Madhu Ma'am", 
+                    subject: "BST and Accounts",
+                    nickname: "The Knowledge Keeper",
+                    message: "Your dedication to education in all forms has been an inspiration to us. Thank you for your unwavering support and guidance in our academic journey.",
+                    video: "assets/madhu.mp4"
+                },
+                { 
+                    name: "Shilpa Ma'am", 
+                    subject: "Economics",
+                    nickname: "Our Economy Expert",
+                    message: "Your ability to explain economic theories in relatable terms has been remarkable. Thank you for showing us how economics shapes our everyday lives.",
+                    video: "assets/shilpa.mp4"
+                },
+                { 
+                    name: "Nagraj Bhat Mattu Sir", 
+                    subject: "Sanskrit",
+                    nickname: "Our Sanskrit Scholar",
+                    message: "Your knowledge of Sanskrit and its rich heritage has been awe-inspiring. Thank you for connecting us to our ancient linguistic roots.",
+                    video: "assets/nagraj bhat sir.mp4"
+                },
+                { 
+                    name: "Savitri Ma'am", 
+                    subject: "Kannada",
+                    nickname: "Our Kannada Guide",
+                    message: "Your passion for Kannada literature and language has deepened our appreciation for our mother tongue. Thank you for being such a wonderful guide.",
+                    video: "assets/savithri.mp4"
+                },
+                { 
+                    name: "Ashok Sir", 
+                    subject: "Kannada",
+                    nickname: "Our Regional Language Rockstar",
+                    message: "Your energetic teaching of Kannada has made every class enjoyable. Thank you for helping us appreciate the beauty of our regional language.",
+                    video: "assets/ashok.mp4"
+                },
+                { 
+                    name: "Tejaswini Ma'am", 
+                    subject: "BST and Accounts",
+                    nickname: "Our Accounts Ace",
+                    message: "Your clarity in explaining accounting concepts has been invaluable. Thank you for making the complex world of accounts manageable and understandable.",
+                    video: "assets/thejaswini mam.mp4"
+                },
+                { 
+                    name: "Lokesh Sir", 
+                    subject: "Physical Education",
+                    nickname: "Our Fitness Fanatic",
+                    message: "Your enthusiasm for physical education has taught us the importance of a healthy body and mind. Thank you for making sports and fitness fun for everyone.",
+                    video: "assets/lokesh sir.mp4"
+                },
+                { 
+                    name: "Shivanand Sir", 
+                    subject: "Library",
+                    nickname: "Our Book Baron",
+                    message: "Your management of our library has opened doors to countless worlds through books. Thank you for fostering our love for reading and research.",
+                    video: "assets/library.mp4"
+                },
+                { 
+                    name: "Manjunath Sir", 
+                    subject: "Economics",
+                    nickname: "Our Market Maven",
+                    message: "Your real-world examples in economics have made the subject come alive. Thank you for showing us how economic principles apply to our daily lives.",
+                    video: "assets/manjunath.mp4"
+                },
+                { 
+                    name: "Meenakshi Ma'am", 
+                    subject: "BST and Accounts",
+                    nickname: "Our Business Brilliance",
+                    message: "Your expertise in business studies has given us practical knowledge we'll carry throughout our lives. Thank you for your dedicated teaching.",
+                    video: "assets/meenakshi.mp4"
+                }
+            ];
+
+            const greetingScreen = document.getElementById('greeting-screen');
+            const teachersScreen = document.getElementById('teachers-screen');
+            const videoScreen = document.getElementById('video-screen');
+            const teachersList = document.querySelector('.teachers-list');
+            const greetingModal = document.getElementById('greeting-modal');
+            const closeBtn = document.getElementById('close-btn');
+            const teacherGreetingName = document.getElementById('teacher-greeting-name');
+            const teacherGreetingMessage = document.getElementById('teacher-greeting-message');
+            const teacherVideo = document.getElementById('teacher-video');
+            const skipBtn = document.getElementById('skip-btn');
+            const videoLoading = document.querySelector('.video-loading');
+            const backToListBtn = document.getElementById('back-to-list-btn');
+            const backButton = document.querySelector('.back-btn');
+
+            let currentTeacher = null;
+
+            // Create confetti
+            function createConfetti() {
+                const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+                for (let i = 0; i < 100; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = (5 + Math.random() * 10) + 'px';
+                    confetti.style.height = (5 + Math.random() * 10) + 'px';
+                    confetti.style.animationDuration = (2 + Math.random() * 5) + 's';
+                    document.body.appendChild(confetti);
+                    
+                    // Remove confetti after animation completes
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 7000);
+                }
+            }
+
+            // Populate teachers list
+            function populateTeachersList() {
+                teachersList.innerHTML = '';
+                teachers.forEach(teacher => {
+                    const li = document.createElement('li');
+                    li.className = 'teacher-item';
+                    li.innerHTML = `
+                        <div>
+                            <div class="teacher-name">${teacher.name}</div>
+                            <div class="teacher-subject">${teacher.subject}</div>
+                            <div class="teacher-nickname">${teacher.nickname}</div>
+                        </div>
+                        <div>&gt;</div>
+                    `;
+                    li.addEventListener('click', () => showVideo(teacher));
+                    teachersList.appendChild(li);
+                });
+            }
+
+            // Show video for selected teacher
+            function showVideo(teacher) {
+                currentTeacher = teacher;
+                teachersScreen.style.transform = 'translateX(-100%)';
+                videoScreen.style.transform = 'translateX(0)';
+                
+                // Set up video
+                teacherVideo.style.display = 'none';
+                videoLoading.style.display = 'block';
+                
+                teacherVideo.src = teacher.video;
+                teacherVideo.load();
+                
+                teacherVideo.onloadeddata = function() {
+                    videoLoading.style.display = 'none';
+                    teacherVideo.style.display = 'block';
+                    teacherVideo.play().catch(e => {
+                        console.log("Autoplay prevented: ", e);
+                        videoLoading.textContent = "Tap to play video";
+                        videoLoading.style.display = 'block';
+                    });
+                };
+                
+                teacherVideo.onended = function() {
+                    showGreeting(currentTeacher);
+                };
+            }
+
+            // Show greeting for selected teacher
+            function showGreeting(teacher) {
+                videoScreen.style.transform = 'translateX(100%)';
+                teacherGreetingName.textContent = `${teacher.name} - ${teacher.nickname}`;
+                teacherGreetingMessage.innerHTML = `${teacher.message}<br><br>Thank you,<br>Students of MIPU`;
+                greetingModal.classList.add('active');
+            }
+            
+            // Return to teachers list
+            function returnToTeachersList() {
+                greetingModal.classList.remove('active');
+                videoScreen.style.transform = 'translateX(100%)';
+                teachersScreen.style.transform = 'translateX(0)';
+                
+                // Reset video
+                teacherVideo.pause();
+                teacherVideo.currentTime = 0;
+            }
+
+            // Initialize the app
+            function initApp() {
+                createConfetti();
+                populateTeachersList();
+
+                // Tap on greeting screen to continue
+                greetingScreen.addEventListener('click', () => {
+                    greetingScreen.style.transform = 'translateX(-100%)';
+                    teachersScreen.style.transform = 'translateX(0)';
+                });
+
+                // Back button to return to greeting
+                backButton.addEventListener('click', () => {
+                    teachersScreen.style.transform = 'translateX(100%)';
+                    greetingScreen.style.transform = 'translateX(0)';
+                    createConfetti();
+                });
+
+                // Close modal
+                closeBtn.addEventListener('click', () => {
+                    returnToTeachersList();
+                });
+                
+                // Back to list button
+                backToListBtn.addEventListener('click', () => {
+                    returnToTeachersList();
+                });
+
+                // Close modal if clicked outside
+                greetingModal.addEventListener('click', (e) => {
+                    if (e.target === greetingModal) {
+                        returnToTeachersList();
+                    }
+                });
+                
+                // Skip video button
+                skipBtn.addEventListener('click', () => {
+                    if (currentTeacher) {
+                        teacherVideo.pause();
+                        showGreeting(currentTeacher);
+                    }
+                });
+                
+                // Handle video click to play if autoplay was prevented
+                videoScreen.addEventListener('click', () => {
+                    if (videoLoading.style.display === 'block' && videoLoading.textContent.includes("Tap to play")) {
+                        teacherVideo.play().then(() => {
+                            videoLoading.style.display = 'none';
+                            teacherVideo.style.display = 'block';
+                        }).catch(e => {
+                            console.log("Play failed: ", e);
+                        });
+                    }
+                });
+            }
+
+            initApp();
+        });
+    </script>
+</body>
+</html>
